@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Lagos Map</title>
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
+   integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
+   crossorigin=""/>
+   <script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"
+   integrity="sha512-mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA=="
+   crossorigin=""></script>
+   <script src="https://rawgit.com/k4r573n/leaflet-control-osm-geocoder/master/Control.OSMGeocoder.js"></script>
+   <link rel="stylesheet" href="https://rawgit.com/k4r573n/leaflet-control-osm-geocoder/master/Control.OSMGeocoder.css" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.5/leaflet-routing-machine.css" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.5/leaflet-routing-machine.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+   
+   
+   <style>
+      #map { height: 180px; }
+	  
+   </style>
+   <script language="javascript">
+      var map;
+	  var str;
+	  var counter = 0;
+	  var coordinates = {};
+
+	  var locationIcon = L.icon({
+		   iconUrl:'{{url_for('static', filename='mark.png')}}',
+		   iconSize:[21, 25],
+		   iconAnchor:[20, 24]
+        });
+		
+	  $(document).ready(function() {
+			$("#btn1").click(function(event){
+			    var customer_orders = [];
+			    var coords = $("#coord1").val();
+			//	alert("value of coords: " + coords);
+				var coords_array = coords.split("},");
+			//	alert("length of coords_array: " + coords_array.length);
+				
+				var last_element = (coords_array[coords_array.length-1]).split(":{");
+			
+			   // alert("The number of textboxes: " + last_element[0].charAt(1));
+				
+				for(i = 1; i <= parseInt(last_element[0].charAt(1)); i++) {
+				 
+				 var customer_order_size = document.getElementById(i.toString()).value
+				 alert("value of i: " + i.toString());
+				 alert(customer_order_size);
+				 //customer_orders.push();
+				  
+				//   var name = $("#name").val();
+				//   $("#stage").load('/jquery/result.php', {"name":name} );
+				
+				}
+				
+				
+				
+			});
+	  });	
+		
+      function init() {
+      	 map = L.map('map');
+      	  
+      	 //add a tile layer to add to our map, in this case it's the 'standard' OpenStreetMap.org tile server
+      	 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 18
+         }).addTo(map);
+
+         map.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text. Attribution overload
+        // var london = new L.LatLng(51.505, -0.09); // geographical point (longitude and latitude)
+		 var lagos = new L.LatLng(6.465422, 3.406448); // geographical point (longitude and latitude)
+         map.setView(lagos, 13);
+		 
+		 var osmGeocoder = new L.Control.OSMGeocoder({placeholder: 'Search location...'});
+         map.doubleClickZoom.disable();
+		 map.on('dblclick', onMapClick);
+		// map.on('click', onMapClick);
+		 map.addControl(osmGeocoder);
+      }
+	  
+	  function onMapClick(e) {
+	  //  var marker = L.marker([51.5, -0.09]).addTo(mymap);
+	  // var myIcon = new L.divIcon(); 
+	   counter++;
+	   
+	   var order_box = '<input type="text" id= ' + '"' + counter + '"' + ' size = "5">';
+	   alert(order_box);
+	   
+	   var myIcon = new L.divIcon({
+	     // html:'<input type="text" name="fname" size = "5">'
+		  html:order_box
+	   });
+	   var marker = new L.marker(e.latlng, {icon: myIcon}).addTo(map);
+	   
+	 //   var marker = new L.marker(e.latlng,{icon: locationIcon}).addTo(map);
+	 
+		//var customer = L.Illustrate.textbox(e.latlng, {}).addTo(map);
+		
+		
+	//	alert("customer: " + customer);
+	//	alert("counter: " + counter);
+		
+	//	coordinates.push({
+	//		key:   counter,
+	//		value: e.latlng
+	//	});
+	
+	    coordinates[counter] = e.latlng;
+		str = JSON.stringify(coordinates);
+	    alert(str);
+	//	alert("length: " + str.length);
+		document.getElementById('coord1').value = str;
+	 //   console.log(coordinates);
+		
+	//	for(var key in coordinates) {
+    //       var value = coordinates[key];
+		   
+	//	   alert(key + " " + value);
+	//	}
+	  }
+	  map.doubleClickZoom.enable();
+	  
+	  function shortestPath() {
+	     var value, value1;
+         Object.keys(coordinates).forEach(function(key) {
+            value = coordinates[key];
+			alert("value: " + value);
+			Object.keys(coordinates).forEach(function(key) {
+			   value1 = coordinates[key];
+			   alert("value1: " + value1);
+			   
+			   
+			});
+            
+         });
+	  }
+	  
+	 
+	  
+   </script>
+ </head>
+ <body onLoad="javascript:init();">
+   <div id="map"></div>
+   <div id="map">
+      <input type="button" id="btn1" value="Submit" />
+	  <input type="hidden" id="coord1" value="" />
+   </div>   
+ </body>
+ </html>
